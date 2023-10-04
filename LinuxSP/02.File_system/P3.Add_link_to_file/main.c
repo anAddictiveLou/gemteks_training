@@ -41,6 +41,5 @@ int main(int argc, char** argv)
             printf("Create sym-link successfully\n");
         }
     }
-
     return 0;
 }

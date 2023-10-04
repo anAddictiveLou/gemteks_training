@@ -21,6 +21,7 @@ int directory_valid_check(char* dir_name)
 char* search_in_directory(char* directory_name, char* file_name)
 {
     DIR* dr = NULL;
+    char* ret = NULL;
     if ( NULL == (dr = opendir(directory_name)) )
     {
         perror("Failed to open dir.");
@@ -29,6 +30,8 @@ char* search_in_directory(char* directory_name, char* file_name)
     struct dirent* dir_entry;
     while( NULL != (dir_entry = readdir(dr)) )
     {
+        if (ret != NULL)
+            break;
         /* If entry is a diretory, call traverse_directory() with depth + 1 */
         if ( DT_DIR == dir_entry->d_type )
         {
@@ -41,7 +44,7 @@ char* search_in_directory(char* directory_name, char* file_name)
                 strncpy(new_dir, directory_name, PATH_MAX - strlen(new_dir));
                 strncat(new_dir, "/", PATH_MAX - strlen(new_dir));
                 strncat(new_dir, dir_entry->d_name, PATH_MAX - strlen(new_dir));
-                search_in_directory(new_dir, file_name);
+                ret = search_in_directory(new_dir, file_name);
             }
         }
 
@@ -57,8 +60,9 @@ char* search_in_directory(char* directory_name, char* file_name)
                 return file_path;
             }
         }
+
     }
     closedir(dr);
-    return NULL;
+    return ret;
 }
 
